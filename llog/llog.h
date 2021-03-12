@@ -6,7 +6,7 @@
 
 /**
  * @file
- * @brief An event logging utility.
+ * @brief An event log utility.
  *
  * This module is meant to be used in conjunction with another existing project.
  */
@@ -171,7 +171,7 @@ int llog_add_fp(FILE *fp, int level);
 #define _FIRST_ARG(...) _FIRST_ARG_AUX(__VA_ARGS__, 0)
 #define _FIRST_ARG_AUX(_first, ...) _first
 /*
- * Removes the first argument form __VA_ARGS__
+ * Removes the first argument from __VA_ARGS__
  */
 #define _BUTFIRST_ARGS(...) _BUTFIRST_ARGS_AUX(__VA_ARGS__, 0)
 #define _BUTFIRST_ARGS_AUX(_first, ...) __VA_ARGS__

@@ -47,12 +47,12 @@ void _llog_event_context(llog_event [static 1], void *);
 
 /*------------------------------------------------------------------------------------------------------------*/
 #if defined(_USE_C11THREADS_)
-void _llog_mtx_destroy(void)
+static void _llog_mtx_destroy(void)
 {
     mtx_destroy(&_llog.mutex);
 }
 
-void _llog_mtx_init(void)
+static void _llog_mtx_init(void)
 {
     int status = mtx_init(&_llog.mutex, mtx_plain);
     if (status != thrd_success) {
@@ -63,7 +63,7 @@ void _llog_mtx_init(void)
 }
 
 static once_flag flag = ONCE_FLAG_INIT;
-void _llog_mtx_init_once(void)
+static void _llog_mtx_init_once(void)
 {
     call_once(&flag, _llog_mtx_init);
 }
