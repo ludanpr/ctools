@@ -1,1 +1,1 @@
-* llog - log utility
+# llog - log utility
