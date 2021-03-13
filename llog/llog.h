@@ -98,6 +98,9 @@ typedef void (*llog_lock)(bool lockit /* or unlock it */, void *lockobj);
  * mechanism.
  * @param lockfunc is a function with @a llog_lock prototype
  * @param lockobj is a locking object to be locked and unlocked as required
+ *
+ * @warning Calling macros or functions of this module inside @a lockfunc has
+ * undefined behavior.
  */
 void llog_set_lock(llog_lock lockfunc, void *lockobj);
 
