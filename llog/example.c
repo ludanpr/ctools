@@ -70,6 +70,8 @@ int main(void)
     double *ptr = function();
     if (!ptr) {
         llog_fatal("pointer at %p shouldn't be null", (void *) &ptr);
+        fclose(fp1);
+        fclose(fp2);
         return EXIT_FAILURE;
     }
     fclose(fp1);

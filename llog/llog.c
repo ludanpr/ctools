@@ -178,6 +178,7 @@ int llog_set_level(int level)
     }
 }
 
+// TODO: expose an interface to remove callbacks and file pointers.
 int llog_add_callback(llog_callback logfunc, void *logobj, int level)
 {
     if (!logfunc) return -EINVAL;

@@ -99,8 +99,8 @@ typedef void (*llog_lock)(bool lockit /* or unlock it */, void *lockobj);
  * @param lockfunc is a function with @a llog_lock prototype
  * @param lockobj is a locking object to be locked and unlocked as required
  *
- * @warning Calling macros or functions of this module inside @a lockfunc has
- * undefined behavior.
+ * @warning Calling macros or functions of this module inside @a lockfunc will
+ * result in undefined behavior.
  */
 void llog_set_lock(llog_lock lockfunc, void *lockobj);
 
@@ -129,6 +129,9 @@ int llog_set_level(int level);
  * @retval -EINVAL if an invalid argument is passed
  * @retval -EOVERFLOW if the number of callbacks reached its maximum
  * @retval -ELOCK if an error occurred in the locking/unlocking mechanism
+ *
+ * @warning Calling macros or functions of this module inside @a lockfunc
+ * will result in undefined behavior.
  */
 int llog_add_callback(llog_callback logfunc, void *logobj, int level);
 
@@ -137,7 +140,7 @@ int llog_add_callback(llog_callback logfunc, void *logobj, int level);
  *
  * @return @see @c llog_add_callback
  */
-int llog_add_fp(FILE *fp, int level);
+int llog_add_fp(FILE *restrict fp, int level);
 
 /*
  * These are not required by the Standard.
