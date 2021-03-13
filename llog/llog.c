@@ -28,6 +28,8 @@ static struct {
             .level = LLOG_TRACE,
 #if defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
             .mutex = PTHREAD_MUTEX_INITIALIZER,
+#elif !defined(_USE_C11THREADS_)
+            .lockfunc = (void *) 0,
 #endif
 };
 
@@ -68,26 +70,29 @@ static void _llog_mtx_init_once(void)
     call_once(&flag, _llog_mtx_init);
 }
 
-void llog_set_lock(llog_lock lockfunc, void *lockobj)
+int llog_set_lock(llog_lock lockfunc, void *lockobj)
 {
-    /* Do nothing */
+    return 0;
 }
 
 /*------------------------------------------------------------------------------------------------------------*/
 #elif defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
 
-void llog_set_lock(llog_lock lockfunc, void *lockobj)
+int llog_set_lock(llog_lock lockfunc, void *lockobj)
 {
-    /* Do nothing */
+    return 0;
 }
 
 /*------------------------------------------------------------------------------------------------------------*/
 #else
 
-void llog_set_lock(llog_lock lockfunc, void *lockobj)
+int llog_set_lock(llog_lock lockfunc, void *lockobj)
 {
+    if (!lockfunc || !lockobj) return -EINVAL;
+
     _llog.lockfunc = lockfunc;
     _llog.lockobj = lockobj;
+    return 0;
 }
 
 /*-------------------------------------------------------------------------------------------------------------*/
@@ -105,7 +110,7 @@ static int _lock(void)
     if (status) return -ELOCK;
 #else
     if (_llog.lockfunc) {
-        _llog.lockfunc(true, _llog.lockobj);
+        return _llog.lockfunc(true, _llog.lockobj);
     }
 #endif
     return 0;
@@ -121,7 +126,7 @@ static int _unlock(void)
     if (status) return -ELOCK;
 #else
     if (_llog.lockfunc) {
-        _llog.lockfunc(false, _llog.lockobj);
+        return _llog.lockfunc(false, _llog.lockobj);
     }
 #endif
     return 0;

@@ -20,7 +20,7 @@ is provided by default if C11 threads or POSIX threads are present. If this is n
 locking mechanism can be provided through:
 
 ```c
-void llog_set_lock(llog_lock lockfunc, void *lockobj);
+int llog_set_lock(llog_lock lockfunc, void *lockobj);
 ```
 
 <b>WARNING</b>: Calling any of the macros or functions of this module inside `lockfunc` will result
@@ -30,22 +30,23 @@ An example using POSIX threads is given below (NOTE again that this is only illu
 threads are present, the locking mechanism is supposed to be in place already).
 
 ``` c
+#include "llog.h"
 #include <stdbool.h>
 #include <pthread.h>
 
-void lock_unlock(bool lockit, void *mutex)
+int lock_unlock(bool lockit, void *mutex)
 {
     pthread_mutex_t *mtx = (pthread_mutex_t *) mutex;
     if (lockit) {
         int status = pthread_mutex_lock(mtx);
         if (status) {
-            /* Handler code here */
+            return -ELOCK;
         }
     }
     else {
         int status = pthread_mutex_unlock(mtx);
         if (status) {
-            /* Handler code here */
+            return -ELOCK;
         }
     }
 }

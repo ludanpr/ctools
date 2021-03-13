@@ -68,12 +68,12 @@ typedef struct {
     const char *file;        ///< File name
     const char *func;        ///< Function name
     void *logobj;            ///< i.e. a file stream
-    struct tm *time;         ///< Logging time
+    struct tm *time;         ///< Log time
     va_list args;            ///< Argument list provided to the format string
 } llog_event;
 
 typedef void (*llog_callback)(llog_event event);
-typedef void (*llog_lock)(bool lockit /* or unlock it */, void *lockobj);
+typedef int (*llog_lock)(bool lockit /* or unlock it */, void *lockobj);
 
 /**
  * @name Log macros.
@@ -99,10 +99,13 @@ typedef void (*llog_lock)(bool lockit /* or unlock it */, void *lockobj);
  * @param lockfunc is a function with @a llog_lock prototype
  * @param lockobj is a locking object to be locked and unlocked as required
  *
+ * @retval 0 on success
+ * @retval -EINVAL if lockfunc or lockobj is null
+ *
  * @warning Calling macros or functions of this module inside @a lockfunc will
  * result in undefined behavior.
  */
-void llog_set_lock(llog_lock lockfunc, void *lockobj);
+int llog_set_lock(llog_lock lockfunc, void *lockobj);
 
 /**
  * @brief Enables quiet mode. When set to true, nothing is outputted to stderr.
@@ -130,7 +133,7 @@ int llog_set_level(int level);
  * @retval -EOVERFLOW if the number of callbacks reached its maximum
  * @retval -ELOCK if an error occurred in the locking/unlocking mechanism
  *
- * @warning Calling macros or functions of this module inside @a lockfunc
+ * @warning Calling macros or functions of this module inside @a logfunc
  * will result in undefined behavior.
  */
 int llog_add_callback(llog_callback logfunc, void *logobj, int level);
