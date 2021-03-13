@@ -75,7 +75,7 @@ int llog_set_level(int level);
 ```
 
 ## Adding callbacks and file pointers to write to
-This functions adds, respectively, a callback function with the interface ```c void logfunc(llog_event event);```
+This functions adds, respectively, a callback function with the interface `void logfunc(llog_event event);`
 that can be used to log.
 
 <b>WARNING</b>: Calling any macro or function of this module in `logfunc` has undefined behavior.
