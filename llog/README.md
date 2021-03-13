@@ -19,7 +19,9 @@ By default, this modules provides out of the box locking for its log operations.
 is provided by default if C11 threads or POSIX threads are present. If this is not the case, a
 locking mechanism can be provided through:
 
-    void llog_set_lock(llog_lock lockfunc, void *lockobj);
+```c
+void llog_set_lock(llog_lock lockfunc, void *lockobj);
+```
 
 <b>WARNING</b>: Calling any of the macros or functions of this module inside `lockfunc` has undefined
 behavior.
@@ -60,20 +62,25 @@ int main(void)
 ## Quiet mode
 Does not output to `stderr` (not the default) if `quiet` is set to `true`.
 
-    void llog_set_quiet(bool quiet);
+```c
+void llog_set_quiet(bool quiet);
+```
 
 ## Set log level
 This function sets the level of logs. One of `LLOG_TRACE`, `LLOG_DEBUG`, `LLOG_INFO`, `LLOG_WARN`,
 `LLOG_ERROR`, `LLOG_FATAL`.
 
-    int llog_set_level(int level);
+```c
+int llog_set_level(int level);
+```
 
 ## Adding callbacks and file pointers to write to
-This functions adds, respectively, a callback function with the interface `void logfunc(llog_event event);`
+This functions adds, respectively, a callback function with the interface ```cvoid logfunc(llog_event event);```
 that can be used to log.
 
 <b>WARNING</b>: Calling any macro or function of this module in `logfunc` has undefined behavior.
 
-    int llog_add_callback(llog_callback logfunc, void *logobj, int level);
-    int llog_add_fp(FILE *fp, int level);
-
+```c
+int llog_add_callback(llog_callback logfunc, void *logobj, int level);
+int llog_add_fp(FILE *fp, int level);
+```
