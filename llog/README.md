@@ -11,7 +11,7 @@ int llog_error(const char *restrict format, ...);
 int llog_fatal(const char *restrict format, ...);
 ```
 
-<b>Note</b> that it is required to `format` be an string literal.
+<b>Note</b> that it is required that `format` be a string literal.
 If defined, the macro `LLOG_COLOR` will cause the output to `stderr` to be colored.
 
 ## Setting a lock (if C11 threads nor POSIX threads are present)
