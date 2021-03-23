@@ -65,10 +65,6 @@ static void _llog_mtx_init(void)
 }
 
 static once_flag flag = ONCE_FLAG_INIT;
-static void _llog_mtx_init_once(void)
-{
-    call_once(&flag, _llog_mtx_init);
-}
 
 int llog_set_lock(llog_lock lockfunc, void *lockobj)
 {
@@ -101,7 +97,7 @@ int llog_set_lock(llog_lock lockfunc, void *lockobj)
 static int _lock(void)
 {
 #if defined(_USE_C11THREADS_)
-    _llog_mtx_init_once();
+    call_once(&flag, _llog_mtx_init);
 
     int status = mtx_lock(&_llog.mutex);
     if (status != thrd_success) return -ELOCK;
