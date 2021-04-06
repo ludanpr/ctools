@@ -66,6 +66,7 @@ static void _llog_mtx_init(void)
 
 static once_flag flag = ONCE_FLAG_INIT;
 
+LLOG_LOCAL
 int llog_set_lock(llog_lock lockfunc, void *lockobj)
 {
     return 0;
@@ -74,6 +75,7 @@ int llog_set_lock(llog_lock lockfunc, void *lockobj)
 /*------------------------------------------------------------------------------------------------------------*/
 #elif defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
 
+LLOG_LOCAL
 int llog_set_lock(llog_lock lockfunc, void *lockobj)
 {
     return 0;
@@ -82,6 +84,7 @@ int llog_set_lock(llog_lock lockfunc, void *lockobj)
 /*------------------------------------------------------------------------------------------------------------*/
 #else
 
+LLOG_LOCAL
 int llog_set_lock(llog_lock lockfunc, void *lockobj)
 {
     if (!lockfunc || !lockobj) return -EINVAL;
@@ -158,11 +161,13 @@ static void _file_callback(llog_event event)
     fflush(event.logobj);
 }
 
+LLOG_LOCAL
 void llog_set_quiet(bool quiet)
 {
     _llog.quiet = quiet;
 }
 
+LLOG_LOCAL
 int llog_set_level(int level)
 {
     switch(level) {
@@ -180,6 +185,7 @@ int llog_set_level(int level)
 }
 
 // TODO: expose an interface to remove callbacks and file pointers.
+LLOG_LOCAL
 int llog_add_callback(llog_callback logfunc, void *logobj, int level)
 {
     if (!logfunc) return -EINVAL;
@@ -217,6 +223,7 @@ int llog_add_callback(llog_callback logfunc, void *logobj, int level)
     return 0;
 }
 
+LLOG_LOCAL
 int llog_add_fp(FILE *restrict fp, int level)
 {
     return llog_add_callback(_file_callback, fp, level);
@@ -225,6 +232,7 @@ int llog_add_fp(FILE *restrict fp, int level)
 #if defined(__GNUC__)
 __attribute__((format(printf, 5, 6)))
 #endif
+LLOG_LOCAL
 int _llog_log(int level, const char *restrict file, const char *restrict func,
               unsigned long line, const char *restrict format, ...)
 {

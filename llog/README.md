@@ -88,3 +88,9 @@ that can be used to log.
 int llog_add_callback(llog_callback logfunc, void *logobj, int level);
 int llog_add_fp(FILE *restrict fp, int level);
 ```
+
+## Visibility with shared libraries
+When compiled with a shared (dynamic) library, it is possible to change the default visibility of the interface
+in linux, for example, where the interface is completely visible by default. This can be set in a GNU compiler
+that implements visibility attributes by defining a macro with `-DLLOG_COMPILE_WITH_DLL`. Given this, the shared
+library linker symbols for LLOG will be hidden from the "outside world".

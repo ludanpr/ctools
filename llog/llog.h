@@ -45,6 +45,14 @@
 #  endif
 #endif
 
+#if defined(LLOG_COMPILE_WITH_DLL)  // Compiling with a shared library
+#  if !defined(_WIN32) && defined(__GNUC__) && __GNUC__ >= 4
+#    define LLOG_LOCAL __attribute__((visibility("hidden")))  // When compiled with a shared lib, only interface with the lib
+#  endif
+#else                               // Compiling with a static library
+#  define LLOG_LOCAL
+#endif
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -85,12 +93,12 @@ typedef int (*llog_lock)(bool lockit /* or unlock it */, void *lockobj);
  * @retval -ELOCK on locking/unlocking protocol failure
  */
 ///@{
-#define llog_trace(...) _llog_trace(_FIRST_ARG(__VA_ARGS__) "%.0d", _BUTFIRST_ARGS(__VA_ARGS__))
-#define llog_debug(...) _llog_debug(_FIRST_ARG(__VA_ARGS__) "%.0d", _BUTFIRST_ARGS(__VA_ARGS__))
-#define llog_info(...)  _llog_info(_FIRST_ARG(__VA_ARGS__) "%.0d", _BUTFIRST_ARGS(__VA_ARGS__))
-#define llog_warn(...)  _llog_warn(_FIRST_ARG(__VA_ARGS__) "%.0d", _BUTFIRST_ARGS(__VA_ARGS__))
-#define llog_error(...) _llog_error(_FIRST_ARG(__VA_ARGS__) "%.0d", _BUTFIRST_ARGS(__VA_ARGS__))
-#define llog_fatal(...) _llog_fatal(_FIRST_ARG(__VA_ARGS__) "%.0d", _BUTFIRST_ARGS(__VA_ARGS__))
+#define llog_trace(...) _llog_with_context(LLOG_TRACE, _FIRST_ARG(__VA_ARGS__) "%.0d", _BUTFIRST_ARGS(__VA_ARGS__))
+#define llog_debug(...) _llog_with_context(LLOG_DEBUG, _FIRST_ARG(__VA_ARGS__) "%.0d", _BUTFIRST_ARGS(__VA_ARGS__))
+#define llog_info(...)  _llog_with_context(LLOG_INFO, _FIRST_ARG(__VA_ARGS__) "%.0d", _BUTFIRST_ARGS(__VA_ARGS__))
+#define llog_warn(...)  _llog_with_context(LLOG_WARN, _FIRST_ARG(__VA_ARGS__) "%.0d", _BUTFIRST_ARGS(__VA_ARGS__))
+#define llog_error(...) _llog_with_context(LLOG_ERROR, _FIRST_ARG(__VA_ARGS__) "%.0d", _BUTFIRST_ARGS(__VA_ARGS__))
+#define llog_fatal(...) _llog_with_context(LLOG_FATAL, _FIRST_ARG(__VA_ARGS__) "%.0d", _BUTFIRST_ARGS(__VA_ARGS__))
 ///@}
 
 /**
@@ -185,18 +193,13 @@ int llog_add_fp(FILE *restrict fp, int level);
 #define _BUTFIRST_ARGS(...) _BUTFIRST_ARGS_AUX(__VA_ARGS__, 0)
 #define _BUTFIRST_ARGS_AUX(_first, ...) __VA_ARGS__
 
-#define _llog_trace(F, ...) _llog_log(LLOG_TRACE, __FILE__, __func__, __LINE__+0UL, "" F "", __VA_ARGS__)
-#define _llog_debug(F, ...) _llog_log(LLOG_DEBUG, __FILE__, __func__, __LINE__+0UL, "" F "", __VA_ARGS__)
-#define _llog_info(F, ...)  _llog_log(LLOG_INFO, __FILE__, __func__, __LINE__+0UL, "" F "", __VA_ARGS__)
-#define _llog_warn(F, ...)  _llog_log(LLOG_WARN, __FILE__, __func__, __LINE__+0UL, "" F "",__VA_ARGS__)
-#define _llog_error(F, ...) _llog_log(LLOG_ERROR, __FILE__, __func__, __LINE__+0UL, "" F "", __VA_ARGS__)
-#define _llog_fatal(F, ...) _llog_log(LLOG_FATAL, __FILE__, __func__, __LINE__+0UL, "" F "", __VA_ARGS__)
+#define _llog_with_context(LVL, F, ...) _llog_log(LVL, __FILE__, __func__, __LINE__+0UL, "" F "", __VA_ARGS__)
 
 int _llog_log(int level, const char *restrict file, const char *restrict func,
               unsigned long line, const char *restrict format, ...);
 
 /**
- * @warning Do not call this function directly. This is NOT thread-safe.
+ * @warning This is NOT thread-safe.
  */
 static inline void _llog_event_context(llog_event event[static 1], void *logobj)
 {
