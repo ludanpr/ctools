@@ -10,20 +10,48 @@ typedef struct {
 } callback;
 
 #define LLOG_MAX_CBS 63U
+#if !defined(CACHELINE_SIZE)
+#  define CACHELINE_SIZE 64U
+#endif
+
+#if __STDC_VERSION__ < 201112L
+typedef unsigned char cacheline_padding_[CACHELINE_SIZE];
+#endif
 
 static struct {
+#if __STDC_VERSION__ >= 201112L
+    _Alignas(CACHELINE_SIZE) size_t cbidx;
+    int level;
+#  if defined(_USE_C11THREADS_)
+    _Alignas(CACHELINE_SIZE) mtx_t mutex;
+#  elif defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
+    _Alignas(CACHELINE_SIZE) pthread_mutex_t mutex;
+#  else
+    _Alignas(CACHELINE_SIZE) void *lockobj;
+    llog_lock lockfunc;
+#  endif
+    _Alignas(CACHELINE_SIZE) callback cbs[LLOG_MAX_CBS];
+    _Alignas(CACHELINE_SIZE) bool quiet;
+
+#else
+    cacheline_padding_ padding0;
     size_t cbidx;
     int level;
-#if defined(_USE_C11THREADS_)
+    cacheline_padding_ padding1;
+#  if defined(_USE_C11THREADS_)
     mtx_t mutex;
-#elif defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
+#  elif defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
     pthread_mutex_t mutex;
-#else
+#  else
     void *lockobj;
     llog_lock lockfunc;
-#endif
+#  endif
+    cacheline_padding_ padding2;
     callback cbs[LLOG_MAX_CBS];
+    cacheline_padding_ padding3;
     bool quiet;
+    cacheline_padding_ padding4;
+#endif
 } _llog = { .cbidx = 0,
             .level = LLOG_TRACE,
 #if defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
