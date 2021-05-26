@@ -2,8 +2,8 @@
  * C Header file: alignment_crash_x86_64.h
  *
  */
-#ifndef _ALIGNMENT_CRASH_X86_64_
-#define _ALIGNMENT_CRASH_X86_64_ 1
+#ifndef ALIGNMENT_CRASH_X86_64
+#define ALIGNMENT_CRASH_X86_64 1
 
 /**
  * @brief enable alignment check for i386 processors
@@ -21,31 +21,31 @@
 inline void enable_alignment_check_x86_64(void)
 {
 #if defined(__GNUC__)
-# if defined(__x86_64__)
+#  if defined(__x86_64__)
     __asm__("pushf\n"
             "\torl $0x40000,(%%rsp)\n"
             "\tpopf"
             : : : "cc");
-# elif defined(__i386__)
+#  elif defined(__i386__)
     __asm__("pushf\n"
             "\torl %0x40000,(%%esp)\n"
             "\tpopf"
             : : : "cc");
-# endif
+#  endif
 #elif defined(_MSC_VER)
-# if defined(_M_AMD64) || defined(_M_X64)
+#  if defined(_M_AMD64) || defined(_M_X64)
     __asm {
         pushf
         orl rsp,0x40000
         popf
     }
-# elif defined(_M_IX86)
+#  elif defined(_M_IX86)
     __asm {
         pushf
         orl esp,0x40000
         popf
     }
-# endif
+#  endif
 #endif
 }
 

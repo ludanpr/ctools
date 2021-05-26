@@ -22,9 +22,9 @@ static struct {
 #if __STDC_VERSION__ >= 201112L
     _Alignas(CACHELINE_SIZE) size_t cbidx;
     int level;
-#  if defined(_USE_C11THREADS_)
+#  if defined(USE_C11THREADS_)
     _Alignas(CACHELINE_SIZE) mtx_t mutex;
-#  elif defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
+#  elif defined(USE_PTHREADS_) || defined(USE_WINPTHREADS_)
     _Alignas(CACHELINE_SIZE) pthread_mutex_t mutex;
 #  else
     _Alignas(CACHELINE_SIZE) void *lockobj;
@@ -38,9 +38,9 @@ static struct {
     size_t cbidx;
     int level;
     cacheline_padding_ padding1;
-#  if defined(_USE_C11THREADS_)
+#  if defined(USE_C11THREADS_)
     mtx_t mutex;
-#  elif defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
+#  elif defined(USE_PTHREADS_) || defined(USE_WINPTHREADS_)
     pthread_mutex_t mutex;
 #  else
     void *lockobj;
@@ -54,9 +54,9 @@ static struct {
 #endif
 } _llog = { .cbidx = 0,
             .level = LLOG_TRACE,
-#if defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
+#if defined(USE_PTHREADS_) || defined(USE_WINPTHREADS_)
             .mutex = PTHREAD_MUTEX_INITIALIZER,
-#elif !defined(_USE_C11THREADS_)
+#elif !defined(USE_C11THREADS_)
             .lockfunc = (void *) 0,
 #endif
 };
@@ -76,7 +76,7 @@ static struct {
 void _llog_event_context(llog_event [static 1], void *);
 
 /*------------------------------------------------------------------------------------------------------------*/
-#if defined(_USE_C11THREADS_)
+#if defined(USE_C11THREADS_)
 static void _llog_mtx_destroy(void)
 {
     mtx_destroy(&_llog.mutex);
@@ -101,7 +101,7 @@ int llog_set_lock(llog_lock lockfunc, void *lockobj)
 }
 
 /*------------------------------------------------------------------------------------------------------------*/
-#elif defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
+#elif defined(USE_PTHREADS_) || defined(USE_WINPTHREADS_)
 
 LLOG_LOCAL
 int llog_set_lock(llog_lock lockfunc, void *lockobj)
@@ -127,12 +127,12 @@ int llog_set_lock(llog_lock lockfunc, void *lockobj)
 
 static int _lock(void)
 {
-#if defined(_USE_C11THREADS_)
+#if defined(USE_C11THREADS_)
     call_once(&flag, _llog_mtx_init);
 
     int status = mtx_lock(&_llog.mutex);
     if (status != thrd_success) return -ELOCK;
-#elif defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
+#elif defined(USE_PTHREADS_) || defined(USE_WINPTHREADS_)
     int status = pthread_mutex_lock(&_llog.mutex);
     if (status) return -ELOCK;
 #else
@@ -145,10 +145,10 @@ static int _lock(void)
 
 static int _unlock(void)
 {
-#if defined(_USE_C11THREADS_)
+#if defined(USE_C11THREADS_)
     int status = mtx_unlock(&_llog.mutex);
     if (status != thrd_success) return -ELOCK;
-#elif defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
+#elif defined(USE_PTHREADS_) || defined(USE_WINPTHREADS_)
     int status = pthread_mutex_unlock(&_llog.mutex);
     if (status) return -ELOCK;
 #else

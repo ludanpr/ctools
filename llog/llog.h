@@ -1,8 +1,8 @@
 /*
  * C Header file: llog.h
  */
-#ifndef _LLOG_GUARD_H_
-#define _LLOG_GUARD_H_ 1
+#ifndef LLOG_GUARD_H
+#define LLOG_GUARD_H 1
 
 /**
  * @file
@@ -14,26 +14,26 @@
 #if defined(__STDC_VERSION__)
 #  if (__STDC_VERSION__ >= 201112L)
 #    if !defined(__STDC_NO_THREADS__)
-#      define _USE_C11THREADS_ 1
+#      define USE_C11THREADS_ 1
 #    endif
 #  endif
-#  if defined(__unix__) && !defined(_USE_C11THREADS_)
+#  if defined(__unix__) && !defined(USE_C11THREADS_)
 #    include <unistd.h>
 #    if defined(_POSIX_VERSION)
-#      define _USE_PTHREADS_ 1
+#      define USE_PTHREADS_ 1
 #    endif
-#  elif defined(_WIN32) && !defined(_USE_C11THREADS_)
+#  elif defined(_WIN32) && !defined(USE_C11THREADS_)
 #    if defined(__WINPTHREADS_VERSION)
-#      define _USE_WINPTHREADS_ 1
+#      define USE_WINPTHREADS_ 1
 #    endif
 #  endif
 #else
 #  error "Possible non-Standard compliant implementation."
 #endif
 
-#if defined(_USE_C11THREADS_)
+#if defined(USE_C11THREADS_)
 #  include <threads.h>
-#elif defined(_USE_PTHREADS_) || defined(_USE_WINPTHREADS_)
+#elif defined(USE_PTHREADS_) || defined(USE_WINPTHREADS_)
 #  include <pthread.h>
 #else
 #  if defined(__GNUC__)
