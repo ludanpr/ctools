@@ -28,7 +28,7 @@ inline void enable_alignment_check_x86_64(void)
             : : : "cc");
 #  elif defined(__i386__)
     __asm__("pushf\n"
-            "\torl %0x40000,(%%esp)\n"
+            "\torl $0x40000,(%%esp)\n"
             "\tpopf"
             : : : "cc");
 #  endif
