@@ -1,5 +1,9 @@
 /*
  * Implementation of llog
+ *
+ * TODO:
+ *    - Allow compiling without locking (unsynchronized)
+ *    - Interface to remove callbacks and file pointers
  */
 #include "llog.h"
 
@@ -19,6 +23,7 @@ typedef unsigned char cacheline_padding_[CACHELINE_SIZE];
 #endif
 
 static struct {
+
 #if __STDC_VERSION__ >= 201112L
     _Alignas(CACHELINE_SIZE) size_t cbidx;
     int level;
@@ -52,6 +57,7 @@ static struct {
     bool quiet;
     cacheline_padding_ padding4;
 #endif
+
 } _llog = { .cbidx = 0,
             .level = LLOG_TRACE,
 #if defined(USE_PTHREADS_) || defined(USE_WINPTHREADS_)
